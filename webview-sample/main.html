@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Main</title></head>
+
+<script>
+    function on_click() {
+        host.log("Clicked a button.")
+        
+        var msg_box = document.getElementById("msg-box");
+        msg_box.innerHTML = "This page is executed by: " + host.hostName();
+    }
+</script>
+
+<body>
+    <input value="HOST SYSTEM?" type="button" onClick="on_click()" />
+    <div id="msg-box"></div>
+</body>
+</html>
