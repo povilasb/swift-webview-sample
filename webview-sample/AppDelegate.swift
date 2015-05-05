@@ -20,6 +20,10 @@ class JsHost : NSObject {
 		return "MacOS X WebKit"
 	}
 
+	deinit {
+		println("JsHost destroy")
+	}
+
 	// Create alias in javascript env so that one can call bridge.getColor(...)
 	// instead of bridge.getColorWith_green_blue_alpha_(...)
 	override class func webScriptNameForSelector(aSelector: Selector) -> String!  {
@@ -52,15 +56,16 @@ class JsHost : NSObject {
 }
 
 
-@NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
 	@IBOutlet weak var window: NSWindow!
 	@IBOutlet weak var webView: WebView!
+	var jsHost = JsHost()
 
 
 	func loadGui() {
-		let url = NSBundle.mainBundle().URLForResource("main", withExtension: "html")
+		let url = NSBundle.mainBundle()
+			.URLForResource("main", withExtension: "html")
 		let requesturl = NSURL(string: "main.html")
 		let request = NSURLRequest(URL: url!)
 		self.webView.mainFrame.loadRequest(request)
@@ -70,7 +75,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		self.loadGui()
 
 		var jsWindow = self.webView.windowScriptObject
-		let jsHost = JsHost()
 		jsWindow.setValue(jsHost, forKey: "host")
 	}
 
