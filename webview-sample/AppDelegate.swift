@@ -60,7 +60,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 	@IBOutlet weak var window: NSWindow!
 	@IBOutlet weak var webView: WebView!
-	var jsHost = JsHost()
 
 
 	func loadGui() {
@@ -75,11 +74,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		self.loadGui()
 
 		var jsWindow = self.webView.windowScriptObject
+		var jsHost = JsHost()
 		jsWindow.setValue(jsHost, forKey: "host")
 	}
 
 	func applicationWillTerminate(aNotification: NSNotification) {
 		// Insert code here to tear down your application
+		self.webView.close()
 	}
 
 }
