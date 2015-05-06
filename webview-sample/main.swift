@@ -5,8 +5,7 @@ println("Starting main.")
 
 func main() {
 	let application = NSApplication.sharedApplication()
-	let delegate = AppDelegate()
-	application.delegate = delegate
+	application.delegate = AppDelegate()
 
 	var topLevelObjects: NSArray?
 	let bundle = NSBundle.mainBundle()
