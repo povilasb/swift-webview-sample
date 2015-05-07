@@ -9,6 +9,46 @@
 import Cocoa
 import WebKit
 
+
+class Person: NSObject {
+	private var name: String
+
+
+	init(name: String) {
+		self.name = name
+	}
+
+	deinit {
+		println("Person '" + self.name + "' destroyed.")
+	}
+
+	func getName() -> String {
+		return self.name
+	}
+
+	override class func webScriptNameForSelector(aSelector: Selector)
+		-> String!  {
+		switch aSelector {
+		case Selector("getName"):
+			return "getName"
+
+		default:
+			return nil
+		}
+	}
+
+	// Only allow the two defined functions to be called from JavaScript
+	// Same applies to variable access, all blocked by default
+	override class func isSelectorExcludedFromWebScript(aSelector: Selector)
+		-> Bool {
+		switch aSelector {
+		default:
+			return false
+		}
+	}
+}
+
+
 // Create class which we later hook into the javascript side of the world
 class JsHost : NSObject {
 
@@ -20,19 +60,28 @@ class JsHost : NSObject {
 		return "MacOS X WebKit"
 	}
 
+	func createPerson(name: String) -> Person {
+		return Person(name: name)
+	}
+
+
 	deinit {
-		println("JsHost destroy")
+		println("JsHost destroy.")
 	}
 
 	// Create alias in javascript env so that one can call bridge.getColor(...)
 	// instead of bridge.getColorWith_green_blue_alpha_(...)
-	override class func webScriptNameForSelector(aSelector: Selector) -> String!  {
+	override class func webScriptNameForSelector(aSelector: Selector)
+		-> String!  {
 		switch aSelector {
 		case Selector("log:"):
 			return "log"
 
 		case Selector("hostName"):
 			return "hostName"
+
+		case Selector("createPerson:"):
+			return "createPerson"
 
 		default:
 			return nil
@@ -41,16 +90,11 @@ class JsHost : NSObject {
 
 	// Only allow the two defined functions to be called from JavaScript
 	// Same applies to variable access, all blocked by default
-	override class func isSelectorExcludedFromWebScript(aSelector: Selector) -> Bool {
+	override class func isSelectorExcludedFromWebScript(aSelector: Selector)
+		-> Bool {
 		switch aSelector {
-		case Selector("log:"):
-			return false
-
-		case Selector("hostName"):
-			return false
-
 		default:
-			return true
+			return false
 		}
 	}
 }
