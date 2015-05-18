@@ -11,7 +11,10 @@
 	}
 
 	var me = host.createPerson("Povilas");
-	host.log("Hello, " + me.getName());
+	me.setSayHandler(function(text) {
+		host.log("Hello, " + text);
+	});
+	me.sayMyName();
 	me = null;
 
 </script>
