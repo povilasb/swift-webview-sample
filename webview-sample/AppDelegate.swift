@@ -2,47 +2,12 @@ import Cocoa
 import WebKit
 
 
-class JSContextManager {
-
-	weak var webView: WebView?
-
-	init(_ webView: WebView!) {
-		self.webView = webView
-	}
-
-	func setValue(value: AnyObject?, forKey: String) {
-		self.webView?.windowScriptObject.setValue(value,
-			forKey: forKey)
-	}
-
-	/**
-	 * Does not wait for javascript to finish.
-	 */
-	class func callJSFunctionAsync(function: WebScriptObject!,
-		arguments: [AnyObject]!) {
-
-		dispatch_async(dispatch_get_main_queue()) {
-			function.JSValue().callWithArguments(arguments)
-			()
-		}
-	}
-
-	class func callJSFunction(function: WebScriptObject!,
-		arguments: [AnyObject]!) {
-		function.JSValue().callWithArguments(arguments)
-	}
-
-}
-
-
 class Person: NSObject {
 	private var name: String
-	private var sayHandler: WebScriptObject?
 
 
 	init(name: String) {
 		self.name = name
-		self.sayHandler = nil
 	}
 
 	deinit {
@@ -53,39 +18,17 @@ class Person: NSObject {
 		return self.name
 	}
 
-	func setSayHandler(handler: WebScriptObject) {
-		self.sayHandler = handler
-	}
-
-	func sayMyName() {
-		if self.sayHandler != nil {
-			JSContextManager.callJSFunctionAsync(self.sayHandler!,
-				arguments: [self.name])
-		}
-		else {
-			println("Error: say handler not set.")
-		}
-	}
-
 	override class func webScriptNameForSelector(aSelector: Selector)
 		-> String!  {
 		switch aSelector {
 		case Selector("getName"):
 			return "getName"
 
-		case Selector("setSayHandler:"):
-			return "setSayHandler"
-
-		case Selector("sayMyName"):
-			return "sayMyName"
-
 		default:
 			return nil
 		}
 	}
 
-	// Only allow the two defined functions to be called from JavaScript
-	// Same applies to variable access, all blocked by default
 	override class func isSelectorExcludedFromWebScript(aSelector: Selector)
 		-> Bool {
 		switch aSelector {
@@ -103,29 +46,19 @@ class JsHost : NSObject {
 		println("JavaScript: " + msg)
 	}
 
-	func hostName() -> String {
-		return "MacOS X WebKit"
-	}
-
 	func createPerson(name: String) -> Person {
 		return Person(name: name)
 	}
-
 
 	deinit {
 		println("JsHost destroy.")
 	}
 
-	// Create alias in javascript env so that one can call bridge.getColor(...)
-	// instead of bridge.getColorWith_green_blue_alpha_(...)
 	override class func webScriptNameForSelector(aSelector: Selector)
 		-> String!  {
 		switch aSelector {
 		case Selector("log:"):
 			return "log"
-
-		case Selector("hostName"):
-			return "hostName"
 
 		case Selector("createPerson:"):
 			return "createPerson"
@@ -135,8 +68,6 @@ class JsHost : NSObject {
 		}
 	}
 
-	// Only allow the two defined functions to be called from JavaScript
-	// Same applies to variable access, all blocked by default
 	override class func isSelectorExcludedFromWebScript(aSelector: Selector)
 		-> Bool {
 		switch aSelector {
@@ -170,7 +101,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 
 	func applicationWillTerminate(aNotification: NSNotification) {
-		// Insert code here to tear down your application
 		self.webView.close()
 	}
 

@@ -3,24 +3,19 @@
 <head><title>Main</title></head>
 
 <script>
-	function on_click() {
-		host.log("Clicked a button.")
+	function createPerson() {
+		var msgBox = document.getElementById("msg-box");
 
-		var msg_box = document.getElementById("msg-box");
-		msg_box.innerHTML = "This page is executed by: " + host.hostName();
+		var person
+		person = host.createPerson("Povilas");
+		msgBox.innerHTML = "Hello, " + person.getName();
+		person = null;
 	}
-
-	var me = host.createPerson("Povilas");
-	me.setSayHandler(function(text) {
-		host.log("Hello, " + text);
-	});
-	me.sayMyName();
-	me = null;
 
 </script>
 
 <body>
-	<input value="HOST SYSTEM?" type="button" onClick="on_click()" />
+	<input value="Create person" type="button" onClick="createPerson()" />
 	<div id="msg-box"></div>
 </body>
 </html>
