@@ -1,11 +1,3 @@
-//
-//	AppDelegate.swift
-//	webview-sample
-//
-//	Created by Povilas Balciunas on 19/03/15.
-//	Copyright (c) 2015 povilasb. All rights reserved.
-//
-
 import Cocoa
 import WebKit
 
